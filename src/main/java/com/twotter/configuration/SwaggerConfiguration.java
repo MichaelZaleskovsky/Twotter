@@ -39,7 +39,7 @@ public class SwaggerConfiguration extends WebMvcConfigurerAdapter
     			"Code chalenge task for HSBC",
     			"",
     			"",
-    			new Contact("Mikhail Zaleskovskiy", "mz.java.developer@gmail.com", ""),
+    			new Contact("Mikhail Zaleskovskiy", "https://github.com/MichaelZaleskovsky/Twotter.git", "mz.java.developer@gmail.com"),
     			"",
     			""
     			);
