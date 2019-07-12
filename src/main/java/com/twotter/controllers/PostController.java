@@ -25,7 +25,6 @@ import com.twotter.services.UserService;
 import io.swagger.annotations.*;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-@Api(value = "PostController", description = "API methods to manage posts")
 @RestController
 @RequestMapping("/posts")
 public class PostController {
@@ -36,16 +35,16 @@ public class PostController {
 	@Autowired
 	UserService userService;
 
-    @ApiOperation(value = "Get list of all posts of registred user. Response by pages. "
-    		+ "Return page with page number {page} and specified page size {size} ", 
-    		tags = "getAllPostsByPage", produces = "application/json", consumes = "application/json")
+    @ApiOperation(value = "Gets list of all posts of registred user. Response by pages. "
+    		+ "Returns page with page number {page} and specified page size {size} ", 
+    		tags = "All requests related to the post", produces = "application/json", consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "User with specified ID not exist"), 
+            @ApiResponse(code = 404, message = "User with the specified ID does not exist"), 
             @ApiResponse(code = 200, message = "Suceess, received page is the last page in the list"),
-            @ApiResponse(code = 206, message = "Suceess, user cam get next page")})
+            @ApiResponse(code = 206, message = "Suceess, user can receive the next page")})
     @ApiImplicitParams(value = {
     		@ApiImplicitParam(name = "Authentication", value = "Public userId token", paramType = "header", required = true),
-    		@ApiImplicitParam(name = "page", value = "Number of page", paramType = "path", required = true),
+    		@ApiImplicitParam(name = "page", value = "Page number", paramType = "path", required = true),
     		@ApiImplicitParam(name = "size", value = "Size of page", paramType = "path", required = true)})
 	@GetMapping("/{page}/{size}")
 	public ResponseEntity<List<PostResponse>> getAllPostsByPage(
@@ -58,7 +57,7 @@ public class PostController {
 		UserEntity user = userService.findUserByUserId(userId);
 		if (user == null) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND.value(), 
-					  "User with specified ID not exist"), HttpStatus.NOT_FOUND);
+					  "User with the specified ID does not exist"), HttpStatus.NOT_FOUND);
 		}
 		List<PostResponse> responseValue = postService.getAllPostsByPage(user, page, size);
 		if (postService.isLastPage()) {
@@ -69,21 +68,21 @@ public class PostController {
 		return new ResponseEntity<List<PostResponse>>(responseValue, status);
 	}
 
-	@ApiOperation(value = "Create new post. Return public userId token of user as String."
-    		+ "This token must be included as 'Authentication' header to any other request."
-    		+ "If user with name post.username not exist - it will be created.  ", 
-    		tags = "createNewPost", produces = "application/json", consumes = "application/json")
+	@ApiOperation(value = "Creates new post. Returns public userId token of user as String."
+    		+ "This token is to be included as 'Authentication' header to any other request."
+    		+ "If user with name post.username does not exist - such user will be created.  ", 
+    		tags = "All requests related to the post", produces = "application/json", consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfuly created for existing user"), 
-            @ApiResponse(code = 201, message = "Successfuly created, new user created"),
-            @ApiResponse(code = 413, message = "Post body length more then 140")})
+            @ApiResponse(code = 200, message = "Successfully created for existing user"), 
+            @ApiResponse(code = 201, message = "Successfully created, new user is created"),
+            @ApiResponse(code = 413, message = "Post body length is more than 140")})
 	@PostMapping
 	public ResponseEntity<String> createNewPost(@RequestBody PostRequest post) {
 		
 		String text = post.getText();
 		if (text.length() > PostService.MAX_POST_SIZE) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), 
-					  "Post body length more then 140"), HttpStatus.PAYLOAD_TOO_LARGE);
+					  "Post body length is more than 140"), HttpStatus.PAYLOAD_TOO_LARGE);
 		}
 
 		UserEntity user = userService.findUser(post.getUsername());
@@ -100,13 +99,13 @@ public class PostController {
 		return new ResponseEntity<String>(userId, status);
 	}
 
-	@ApiOperation(value = "Delete existing post by unic id "
-    		+ "Return deleted post ", 
-    		tags = "deletePost", produces = "application/json", consumes = "application/json")
+	@ApiOperation(value = "Deletes existing post by unique id. "
+    		+ "Returns deleted post ", 
+    		tags = "All requests related to the post", produces = "application/json", consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Delete successfuly"), 
+            @ApiResponse(code = 200, message = "Deleted successfully"), 
             @ApiResponse(code = 403, message = "Forbidden to delete. Post created by other user"),
-            @ApiResponse(code = 404, message = "User with specified ID not exist")})
+            @ApiResponse(code = 404, message = "User with the specified ID does not exist")})
     @ApiImplicitParams(value = {
     		@ApiImplicitParam(name = "Authentication", value = "Public userId token", paramType = "header", required = true),
     		@ApiImplicitParam(name = "id", value = "Unic id of post", paramType = "path", required = true)})
@@ -119,7 +118,7 @@ public class PostController {
 		PostEntity post = postService.findPostById(id);
 		if (post == null) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND.value(), 
-					  "User with specified ID not exist"), HttpStatus.NOT_FOUND);
+					  "User with the specified ID does not exist"), HttpStatus.NOT_FOUND);
 		}
 		if (user == null || !user.getUserId().equals(post.getUser().getUserId())) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN.value(), 
@@ -129,16 +128,16 @@ public class PostController {
 		return new ResponseEntity<PostResponse>(new PostResponse(post), HttpStatus.OK);
 	}
 
-    @ApiOperation(value = "Get list of all posts of those users who specified user follows. Response by pages. "
-    		+ "Return page with page number {page} and specified page size {size} ", 
-    		tags = "getAllPostsOfLeadersByPage", produces = "application/json", consumes = "application/json")
+    @ApiOperation(value = "Gets list of all posts of those users who are the specified user follows. Response by pages. "
+    		+ "Returns page with page number {page} and specified page size {size} ", 
+    		tags = "All requests related to the post", produces = "application/json", consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "User with specified userId not exist"), 
-            @ApiResponse(code = 200, message = "Suceess, received page is the last page in the list"),
-            @ApiResponse(code = 206, message = "Suceess, user cam get next page")})
+            @ApiResponse(code = 404, message = "User with the specified userId does not exist"), 
+            @ApiResponse(code = 200, message = "Success, received page is the last page in the list"),
+            @ApiResponse(code = 206, message = "Success, user can receive the next page")})
     @ApiImplicitParams(value = {
     		@ApiImplicitParam(name = "Authentication", value = "Public userId token", paramType = "header", required = true),
-    		@ApiImplicitParam(name = "page", value = "Number of page", paramType = "path", required = true),
+    		@ApiImplicitParam(name = "page", value = "Page number", paramType = "path", required = true),
     		@ApiImplicitParam(name = "size", value = "Size of page", paramType = "path", required = true)})
 	@GetMapping("/leaders/{page}/{size}")
 	public ResponseEntity<List<PostResponse>> getAllPostsOfLeadersByPage(
@@ -151,7 +150,7 @@ public class PostController {
 		UserEntity user = userService.findUserByUserId(userId);
 		if (user == null) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND.value(), 
-					  "User with specified ID not exist"), HttpStatus.NOT_FOUND);
+					  "User with the specified ID does not exist"), HttpStatus.NOT_FOUND);
 		}
 		
 		List<PostResponse> responseValue = postService.getAllPostsOfLeadersByPage(user, page, size);
@@ -163,18 +162,18 @@ public class PostController {
 		return new ResponseEntity<List<PostResponse>>(responseValue, status);
 	}
 
-    @ApiOperation(value = "Get list of all posts of one of those users who specified user follows. Response by pages. "
-    		+ "Return page with page number {page} and specified page size {size} ", 
-    		tags = "getAllPostsOfOneLeaderByPage", produces = "application/json", consumes = "application/json")
+    @ApiOperation(value = "Gets list of all posts of one of those users who are the specified user follows. Response by pages. "
+    		+ "Returns page with page number {page} and specified page size {size} ", 
+    		tags = "All requests related to the post", produces = "application/json", consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "User with specified userId not exist"), 
-            @ApiResponse(code = 403, message = "Forbidden access. User must follow leader to get posts"), 
+            @ApiResponse(code = 404, message = "User with the specified userId does not exist"), 
+            @ApiResponse(code = 403, message = "Forbidden access. User must  be the leader's follower to get posts"), 
             @ApiResponse(code = 200, message = "Suceess, received page is the last page in the list"),
-            @ApiResponse(code = 206, message = "Suceess, user cam get next page")})
+            @ApiResponse(code = 206, message = "Suceess, user can receive the next page")})
     @ApiImplicitParams(value = {
     		@ApiImplicitParam(name = "Authentication", value = "Public userId token", paramType = "header", required = true),
     		@ApiImplicitParam(name = "leaderId", value = "Public token of leader", paramType = "path", required = true),
-    		@ApiImplicitParam(name = "page", value = "Number of page", paramType = "path", required = true),
+    		@ApiImplicitParam(name = "page", value = "Page number", paramType = "path", required = true),
     		@ApiImplicitParam(name = "size", value = "Size of page", paramType = "path", required = true)})
 	@GetMapping("/leader/{liderId}/{page}/{size}")
 	public ResponseEntity<List<PostResponse>> getAllPostsOfOneLeaderByPage(
@@ -189,12 +188,12 @@ public class PostController {
 		UserEntity leader = userService.findUserByUserId(leaderId);
 		if (user == null || leader == null) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND.value(), 
-					  "User with specified ID not exist"), HttpStatus.NOT_FOUND);
+					  "User with the specified ID does not exist"), HttpStatus.NOT_FOUND);
 		}
 		
 		if (!user.getLeaders().contains(leader)) {
 			return new ResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN.value(), 
-					  "Forbidden access. User must follow leader to get posts "), HttpStatus.FORBIDDEN);
+					  "Forbidden access. User must be the leader's follower to get posts "), HttpStatus.FORBIDDEN);
 		}
 		
 		List<PostResponse> responseValue = postService.getAllPostsOfOneLeaderByPage(user, page, size, leader);

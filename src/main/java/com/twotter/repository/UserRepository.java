@@ -12,5 +12,5 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 	UserEntity findOneByUsername(String username);
 	boolean existsByUserId(String userId);
 	UserEntity findOneByUserId(String userId);
-	List<UserEntity> findByUsernameStartsWith(String startWith);
+	List<UserEntity> findByUsernameIgnoreCaseStartsWith(String startWith);
 }

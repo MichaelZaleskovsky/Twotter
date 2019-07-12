@@ -23,11 +23,8 @@ public class TwotterApplicationTests {
 	@LocalServerPort
 	private int port;
 	
-	private String domen;
+	private static String domen;
 	
-	/*
-	 * @Before public void setUp() { domen = "http://localhost:"+port; }
-	 */
 	
 	@Before 
 	public void setUp() { 
@@ -40,14 +37,15 @@ public class TwotterApplicationTests {
 		
 		String endPoint = "/posts";
 		String postRequest;
+		System.out.println("HOST = "+domen+endPoint);
 		
 		/*
-		 * User registred when he send post first time. In this case he receive
+		 * User are registered when he sends a post for the first time. In this case he receives
 		 * response with status code CREATED (201)
 		 */		
 		postRequest = "{\n" + 
-				"	\"username\" : \"Kolia\", \n" + 
-				"	\"text\" : \"First Kolia's posts text\"\n" + 
+				"	\"username\" : \"Alice\", \n" + 
+				"	\"text\" : \"First Alice's posts text\"\n" + 
 				"}";
 		
 		given().contentType("application/json").body(postRequest)
@@ -60,8 +58,8 @@ public class TwotterApplicationTests {
 		 * When user already exist he receive response with code OK (200)
 		 */		
 		postRequest = "{\n" + 
-				"	\"username\" : \"Kolia\", \n" + 
-				"	\"text\" : \"Second Kolia's posts text\"\n" + 
+				"	\"username\" : \"Alice\", \n" + 
+				"	\"text\" : \"Second Alice's posts text\"\n" + 
 				"}";
 		
 		given().contentType("application/json").body(postRequest)
@@ -71,11 +69,11 @@ public class TwotterApplicationTests {
 		.statusCode(HttpStatus.OK.value());
 		
 		/*
-		 * When size of the post is more then 140 user receive response with code
+		 * When size of the post is more than 140 user receive response with code
 		 * PAYLOAD_TOO_LARGE (413)
 		 */
 		postRequest = "{\n" + 
-				"	\"username\" : \"Kolia\", \n" + 
+				"	\"username\" : \"Marcin\", \n" + 
 				"	\"text\" : \"In response to your advertisement for Java Development position "
 				+ "please find enclosed a copy of my resume for your consideration. I have got "
 				+ "relevant education, possess good knowledge in object-oriented programming and "
@@ -100,11 +98,11 @@ public class TwotterApplicationTests {
 		String postRequest;
 		
 		postRequest = "{\n" + 
-				"	\"username\" : \"Vasia\", \n" + 
-				"	\"text\" : \"Vasia's posts text\"\n" + 
+				"	\"username\" : \"Ronald\", \n" + 
+				"	\"text\" : \"Ronald's posts text\"\n" + 
 				"}";
 		
-		String tokenOfVasia = given().contentType("application/json").body(postRequest)
+		String tokenOfRonald = given().contentType("application/json").body(postRequest)
 		.when()
 		.post(domen+endPoint)
 		.then()
@@ -124,11 +122,11 @@ public class TwotterApplicationTests {
 		.statusCode(HttpStatus.OK.value());
 		
 		/*
-		 * Total 3 posts posted by Vasia. 
+		 * Total 3 posts posted by Ronald. 
 		 * Request for 1-st page with page size 2 return 
 		 * array with size 2 and status code PARTIAL_CONTENT (206)
 		 */		
-		String json = given().contentType("application/json").header("Authentication", tokenOfVasia)
+		String json = given().contentType("application/json").header("Authentication", tokenOfRonald)
 		.when()
 		.get(domen + endPoint + "/1/2")
 		.then()
@@ -139,11 +137,11 @@ public class TwotterApplicationTests {
 		assertEquals(2, list1.size());
 		
 		/*
-		 * Total 3 posts posted by Vasia. 
+		 * Total 3 posts posted by Ronald. 
 		 * Request for 2-nd page with page size 2 return 
 		 * array with size 1 and status code OK (200)
 		 */		
-		String json1 = given().contentType("application/json").header("Authentication", tokenOfVasia)
+		String json1 = given().contentType("application/json").header("Authentication", tokenOfRonald)
 		.when()
 		.get(domen + endPoint + "/2/2")
 		.then()

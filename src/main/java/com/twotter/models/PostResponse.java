@@ -6,16 +6,12 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class PostResponse {
 	
-    @ApiModelProperty(notes = "Unic posts ID",name="id",required=true,value="12345")
 	private long id;
 	
-    @ApiModelProperty(notes = "Tim when post was created in ms",name="time",required=true,value="12345")
 	private long time;
 	
-    @ApiModelProperty(notes = "User's name",required=true, value="User")
 	private String username;
 	
-    @ApiModelProperty(notes = "Text of the post",required=true, value="Text")
 	private String text;
 
 	public PostResponse(PostEntity post) {

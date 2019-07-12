@@ -72,7 +72,7 @@ public class UserServiceImplementation implements UserService {
 
 	@Override
 	public List<UserResponse> findUsersByNameStartWith(String startWith) {
-		List<UserEntity> usersList = repository.findByUsernameStartsWith(startWith);
+		List<UserEntity> usersList = repository.findByUsernameIgnoreCaseStartsWith(startWith);
 		return null;
 	}
 
